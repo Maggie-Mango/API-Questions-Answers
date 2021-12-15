@@ -1,5 +1,6 @@
 module.exports = {
   user: 'root',
-  password: '',
-  database: ''
+  password: 'password',
+  database: 'days_a_week',
+  multipleStatements: true
 };
