@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+const async = require('async');
 const mysqlConfig = require('./config.js');
 const pathToQuestions = ('../Datasets/questions.csv');
 const pathToAnswers = ('../Datasets/answers.csv');
@@ -13,37 +14,45 @@ connection.connect((err) => {
   console.log('connected to sql database')
 });
 
-const loadQuestions = connection.query(`LOAD DATA LOCAL INFILE ? INTO TABLE questions
+
+
+const loadQuestions =
+  connection.query(`LOAD DATA LOCAL INFILE ? INTO TABLE questions
   FIELDS TERMINATED BY ','
   LINES TERMINATED BY '\n'
   IGNORE 1 LINES
   (id, product_id, body, date_written, asker_name, asker_email, reported, helpful)`,
   [pathToQuestions],
   function(err, results) {
-    if (err, results) {
+    if (err) {
       console.log(err);
     } else {
-      console.log('insert complete');
+      console.log('insert data into QUESTIONS complete');
     }
   }
 )
 
-const loadAnswers = connection.query(`LOAD DATA LOCAL INFILE ? INTO TABLE questions
+
+
+const loadAnswers =
+  connection.query(`LOAD DATA LOCAL INFILE ? INTO TABLE answers
   FIELDS TERMINATED BY ','
   LINES TERMINATED BY '\n'
   IGNORE 1 LINES
-  (id, product_id, body, date_written, asker_name, asker_email, reported, helpful)`,
-  [pathToQuestions],
+  (id, question_id, body, date_written, answerer_name, answerer_email, reported, helpful)`,
+  [pathToAnswers],
   function(err, results) {
-    if (err, results) {
+    if (err) {
       console.log(err);
     } else {
-      console.log('insert complete');
+      console.log('insert data into ANSWERS complete');
     }
   }
 )
 
-const loadPhotoAnswer = connection.query(`LOAD DATA LOCAL INFILE ? INTO TABLE answers_photo
+
+const loadAnswersPhotos =
+  connection.query(`LOAD DATA LOCAL INFILE ? INTO TABLE answers_photo
   FIELDS TERMINATED BY ','
   LINES TERMINATED BY '\n'
   IGNORE 1 LINES
@@ -53,7 +62,8 @@ const loadPhotoAnswer = connection.query(`LOAD DATA LOCAL INFILE ? INTO TABLE an
     if (err) {
       console.log(err);
     } else {
-      console.log('insert complete')
+      console.log('insert data into ANSWER PHOTOS complete')
     }
-});
+})
+
 

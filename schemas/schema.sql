@@ -19,8 +19,8 @@ CREATE TABLE questions (
 CREATE TABLE answers (
   id INT NOT NULL AUTO_INCREMENT,
   question_id INT,
-  body VARCHAR(200) NOT NULL,
-  date_written TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  body VARCHAR(600) NOT NULL,
+  date_written VARCHAR(100),
   answerer_name VARCHAR(100) NOT NULL,
   answerer_email VARCHAR(100) NOT NULL,
   reported INT,
