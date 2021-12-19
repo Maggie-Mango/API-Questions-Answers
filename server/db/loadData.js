@@ -1,5 +1,4 @@
 const mysql = require('mysql');
-const async = require('async');
 const mysqlConfig = require('./config.js');
 const pathToQuestions = ('../Datasets/questions.csv');
 const pathToAnswers = ('../Datasets/answers.csv');

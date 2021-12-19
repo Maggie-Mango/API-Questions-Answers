@@ -1,19 +1,16 @@
 const express = require('express');
-var router = express.Router();
-const sqlDb = require('../database-mysql');
-
 const app = express();
-const PORT = 3000;
+const sqlDb = require('./db/index.js');
+const apiRouter = require('./routes');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/api/questionsAndAnswers', apiRouter);
 
 
-
-
-app.listen(PORT, () => {
-  console.log(`listening on port ${PORT}`)
-})
+app.listen(process.env.PORT || '3000', () => {
+  console.log(`Server is running on port ${process.env.PORT || '3000'}`)
+});
 
 
 
