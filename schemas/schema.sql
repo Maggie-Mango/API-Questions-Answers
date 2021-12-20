@@ -37,26 +37,32 @@ CREATE TABLE answers_photo (
 );
 
 SELECT
-  q.product_id,
-  q.body,
-  q.FROM_UNIXTIME(a.date_written/1000) as date_time,
-  q.answerer_name,
-  q.answerer_email,
-  q.reported,
-  q.helpful
+  q.id as question_id,
+  q.product_id as product_id,
+  q.body as question_body,
+  FROM_UNIXTIME(q.date_written/1000) as question_date,
+  q.asker_name as asker_name,
+  q.reported as reported,
+  a.a_id as answer_id,
+  a.answer_body as answer_body,
+  a.date_time as answer_date,
+  a.answerer_name as answerer_name,
+  a.helpful as helpfulness,
+  a.url as photos
 FROM questions q
-JOIN (SELECT  a.id,
-        a.question_id,
-        a.body as answer_body,
-        FROM_UNIXTIME(q.date_written/1000) as date_time,
-        a.answerer_name,
-        a.answerer_email,
-        a.reported,
-        a.helpful,
-        ap.id as ap_id,
-        ap.url
-FROM answers a
-JOIN answers_photo ap
-ON a.id = ap.answer_id) as answers
-ON questions.id = answers.id
-LIMIT 30/K;
+JOIN (SELECT
+          aw.id as a_id,
+          aw.question_id,
+          aw.body as answer_body,
+          FROM_UNIXTIME(aw.date_written/1000) as date_time,
+          aw.answerer_name,
+          aw.answerer_email,
+          aw.reported,
+          aw.helpful,
+          ap.id,
+          ap.url
+          FROM answers aw
+          JOIN answers_photo ap
+          ON aw.id = ap.answer_id) AS a
+ON q.id = a.id
+LIMIT 30;
