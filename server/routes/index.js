@@ -7,8 +7,8 @@ router.get('/', async (req, res, next) => {
   try {
     let results = await db.all();
     res.json(results);
-  } catch(e) {
-    console.log(e)
+  } catch(err) {
+    console.log(err)
     res.sendStatus(500);
   }
 
