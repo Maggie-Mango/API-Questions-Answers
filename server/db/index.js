@@ -25,13 +25,15 @@ days_a_week_db.all = () => {
         "asker_name", q.asker_name,
         "question_helpfulness", q.helpful,
         "reported", q.reported,
-      )) results,
-      a.a_id as answer_id,
-      a.answer_body as answer_body,
-      a.date_time as answer_date,
-      a.answerer_name as answerer_name,
-      a.helpful as helpfulness,
-      a.url as photos
+        "answers", JSON_OBJECT(
+          "id", a.a_id,
+          "body", a.answer_body,
+          "date", a.date_time,
+          "answerer_name", a.answerer_name,
+          "helpfulness", a.helpful,
+          "photos", CONCAT('[', a.url, ']')
+        )
+      )) results
     FROM questions q
     JOIN (SELECT
               aw.id as a_id,
