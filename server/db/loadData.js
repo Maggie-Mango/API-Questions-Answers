@@ -1,8 +1,8 @@
 const mysql = require('mysql');
 const mysqlConfig = require('./config.js');
-const pathToQuestions = ('../Datasets/questions.csv');
-const pathToAnswers = ('../Datasets/answers.csv');
-const pathToAnswersPhotos = ('../Datasets/answers_photos.csv');
+const pathToQuestions = ('Datasets/questions.csv');
+const pathToAnswers = ('Datasets/answers.csv');
+const pathToAnswersPhotos = ('Datasets/answers_photos.csv');
 
 //logs me in
 const connection = mysql.createConnection(mysqlConfig);
@@ -14,7 +14,9 @@ connection.connect((err) => {
   function loadQuestions() {
     return new Promise((resolve, reject) => {
     console.log('loading data into Questions')
-    connection.query(`LOAD DATA LOCAL INFILE ? INTO TABLE questions
+    connection.query(`
+    SET GLOBAL local_infile=1;
+    LOAD DATA LOCAL INFILE ? INTO TABLE questions
     FIELDS TERMINATED BY ','
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES

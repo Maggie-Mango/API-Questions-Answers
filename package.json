@@ -8,7 +8,9 @@
   },
   "scripts": {
     "test": "jest",
-    "dev": "npx nodemon server/server.js -w server"
+    "dev": "npx nodemon server/server.js -w server",
+    "create": "node server/db/createDbs.js",
+    "load": "node server/db/loadData.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
   },
   "dependencies": {
     "async": "^3.2.2",
+    "cors": "^2.8.5",
     "express": "^4.17.2",
     "mongodb": "^4.2.1",
     "mongoose": "^6.1.1",
