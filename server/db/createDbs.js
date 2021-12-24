@@ -23,11 +23,11 @@ CREATE TABLE questions (
 
 CREATE TABLE answers (
   id INT NOT NULL AUTO_INCREMENT,
-  question_id INT,
-  body VARCHAR(600) NOT NULL,
-  date_written bigint NOT NULL,
-  answerer_name VARCHAR(100) NOT NULL,
-  answerer_email VARCHAR(100) NOT NULL,
+  question_id INT NOT NULL DEFAULT 666,
+  body VARCHAR(600) NOT NULL DEFAULT 'no body',
+  date_written bigint NOT NULL DEFAULT 0000000000000,
+  answerer_name VARCHAR(100) NOT NULL DEFAULT 'no name',
+  answerer_email VARCHAR(100) NOT NULL DEFAULT 'no email',
   reported INT,
   helpful INT,
   PRIMARY KEY (id)
@@ -35,8 +35,8 @@ CREATE TABLE answers (
 
 CREATE TABLE answers_photo (
   id INT NOT NULL AUTO_INCREMENT,
-  answer_id INT,
-  url VARCHAR(200),
+  answer_id INT NOT NULL DEFAULT 666,
+  url VARCHAR(200) NOT NULL DEFAULT 'no pic',
   PRIMARY KEY (id)
 );`
 
