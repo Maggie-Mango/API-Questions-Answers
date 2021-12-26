@@ -6,7 +6,7 @@ const pool = mysql.createPool({
   password: 'password',
   user: 'root',
   database: 'days_a_week',
-  host: 'localhost',
+  host: '127.0.0.1', //use localhost on M1 imac or omit
   port: '3306'
 });
 
@@ -50,7 +50,7 @@ days_a_week_db.getData = (id) => {
               aw.answerer_email,
               aw.reported,
               aw.helpful,
-              CASE WHEN ap.url IS NULL THEN 'no pic' ELSE ap.id END as url
+              CASE WHEN ap.url IS NULL THEN 'no pic' ELSE ap.url END as url
             FROM answers aw
             LEFT JOIN answers_photo ap
             ON aw.id = ap.answer_id
@@ -62,19 +62,30 @@ days_a_week_db.getData = (id) => {
     if(err) {
       return reject(err);
     }
-    return resolve(results);
-  });
+      return resolve(results);
+    });
   });
 }
 
 
-days_a_week_db.postData = () => {
+days_a_week_db.postQuestion = (res) => {
   return new Promise((resolve, reject) => {
-
+    pool.query(`
+    INSERT INTO questions (product_id, body, date_written, asker_name, asker_email)
+    VALUES (${res['product_id']}, ${JSON.stringify(res['body'])}, now(), ${JSON.stringify(res['name'])}, ${JSON.stringify(res['email'])})
+    `,  (err, results) => {
+      if (err) {
+        console.log('error posting question')
+        return reject(err);
+      } else {
+        console.log('question inserted into database')
+        return resolve(results);
+      }
+    })
   })
 }
 
-days_a_week_db.updateData = () => {
+days_a_week_db.update = () => {
   return new Promise((resolve, reject) => {
 
   })

@@ -66,3 +66,6 @@ JOIN (SELECT
           ON aw.id = ap.answer_id) AS a
 ON q.id = a.id
 LIMIT 30;
+
+INSERT INTO questions (body, date_written, asker_name, asker_email)
+VALUES ("body", now(), "name”, “asker@email.com”);

@@ -11,11 +11,18 @@ router.get('/:id', async (req, res, next) => {
     res.sendStatus(500);
   }
 });
-/*
-//post
-router.post
 
-//update
-router.put
-*/
+
+
+//add
+router.post('/:id', async (req, res, next) => {
+  console.log(req.body)
+  try {
+    await db.postQuestion(req.body)
+    res.sendStatus(201)
+  } catch(err) {
+    console.log(err)
+  }
+})
+
 module.exports = router;
