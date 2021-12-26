@@ -16,10 +16,9 @@ days_a_week_db.getData = (id) => {
  //remove later
   return new Promise((resolve, reject) => {
     pool.query(
-    `SELECT
-    JSON_OBJECT (
-      'product_id', q.product_id,
-      'results', JSON_ARRAYAGG(JSON_OBJECT(
+    `
+    SELECT
+        JSON_OBJECT(
         'question_id', q.id,
         'question_body', q.body,
         'question_date', FROM_UNIXTIME(q.date_written/1000),
@@ -38,41 +37,75 @@ days_a_week_db.getData = (id) => {
             )
           )
         )
-      )
-    )) as data
+      ) results
     FROM questions q
     JOIN (SELECT
-              aw.id as a_id,
-              aw.question_id as question_id,
-              aw.body as answer_body,
-              FROM_UNIXTIME(aw.date_written/1000) as date_time,
-              aw.answerer_name,
-              aw.answerer_email,
-              aw.reported,
-              aw.helpful,
-              CASE WHEN ap.url IS NULL THEN 'no pic' ELSE ap.url END as url
-            FROM answers aw
-            LEFT JOIN answers_photo ap
-            ON aw.id = ap.answer_id
-            WHERE ap.answer_id IS NOT NULL
-            ) AS a
+      aw.id as a_id,
+      aw.question_id as question_id,
+      aw.body as answer_body,
+      FROM_UNIXTIME(aw.date_written/1000) as date_time,
+      aw.answerer_name,
+      aw.answerer_email,
+      aw.reported,
+      aw.helpful,
+      CASE WHEN ap.url IS NULL THEN '"no pic"' ELSE ap.url END as url
+    FROM answers aw
+    LEFT JOIN answers_photo ap
+    ON aw.id = ap.answer_id
+    WHERE ap.answer_id IS NOT NULL
+    ) AS a
     ON q.id = a.question_id
     WHERE product_id = ?
-    `, [id], (err, results) => {
+    UNION ALL
+    SELECT
+    JSON_OBJECT(
+        'question_id', q.id,
+        'question_body', q.body,
+        'question_date', FROM_UNIXTIME(q.date_written/1000),
+        'asker_name', q.asker_name,
+        'question_helpfulness', q.helpful,
+        'reported', CASE WHEN q.reported = 0 THEN 'False' ELSE 'True' END,
+        'answers', JSON_OBJECT(
+          12, JSON_OBJECT(
+            'id', 12,
+            'body', "test",
+            'date', 0,
+            'answerer_name', "test",
+            'helpfulness', 0,
+            'photos', JSON_ARRAY (
+              "[]"
+            )
+          )
+        )
+      ) results
+    FROM questions q
+    LEFT JOIN answers a
+    ON q.id = a.question_id
+    WHERE a.question_id IS NULL
+    AND product_id = ?
+    `, [id, id], (err, results) => {
     if(err) {
       return reject(err);
     }
-      return resolve(results);
+      let mySqlData = {
+        "results": []
+      }
+        for (let i in results) {
+          let data = JSON.parse(results[i]['results'])
+          mySqlData["results"].push(data)
+        }
+    return resolve(mySqlData);
     });
   });
 }
 
 
 days_a_week_db.postQuestion = (res) => {
+  console.log(res)
   return new Promise((resolve, reject) => {
     pool.query(`
     INSERT INTO questions (product_id, body, date_written, asker_name, asker_email)
-    VALUES (${res['product_id']}, ${JSON.stringify(res['body'])}, now(), ${JSON.stringify(res['name'])}, ${JSON.stringify(res['email'])})
+    VALUES (5953, 'mandatory body', now(), 'mandatory name', 'mandatory@email.com')
     `,  (err, results) => {
       if (err) {
         console.log('error posting question')
@@ -90,9 +123,6 @@ days_a_week_db.update = () => {
 
   })
 }
-
-
-
 
 
 
