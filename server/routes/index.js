@@ -15,8 +15,8 @@ router.get('/:id', async (req, res, next) => {
 
 
 //add
-router.post('/:id', async (req, res, next) => {
-  console.log(req.body)
+router.post('/', async (req, res, next) => {
+  //console.log(res.body)
   try {
     await db.postQuestion(req.body)
     res.sendStatus(201)

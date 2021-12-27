@@ -1,17 +1,44 @@
+//objects w/o answers
+
+function getQuestionsWithoutAnswers() {
+    return new Promise((resolve, reject) => {
+      pool.query(`
+    SELECT
+    JSON_OBJECT(
+        'question_id', q.id,
+        'question_body', q.body,
+        'question_date', FROM_UNIXTIME(q.date_written/1000),
+        'asker_name', q.asker_name,
+        'question_helpfulness', q.helpful,
+        'reported', CASE WHEN q.reported = 0 THEN 'False' ELSE 'True' END,
+      ) questions_obj
+      FROM questions q
+      LEFT JOIN answers a
+      ON q.id = a.question_id
+      WHERE a.question_id IS NULL
+      AND product_id = 3
+    `), [id], (err, results) => {
+      if(err) {
+        return
+      }
+    }
+    })
+
+  }
 
 
 {
     "product_id": "60221",
-    "results": [
+    "results": [ //question objects
         {
-            "question_id": 520119,
+            "question_id": 520119, //if the ID in questions table, matches question id in ansewrs
             "question_body": "Reiciendis quia labore ipsa adipisci expedita in ea esse sequi.",
             "question_date": "2021-03-25T00:00:00.000Z",
             "asker_name": "Joaquin21",
             "question_helpfulness": 29,
             "reported": false,
             "answers": {
-                "4872393": {
+               "4872393": {
                     "id": 4872393,
                     "body": "Nulla incidunt animi.",
                     "date": "2021-09-23T00:00:00.000Z",
@@ -561,3 +588,6 @@
             }
         }
  } ]
+
+
+
