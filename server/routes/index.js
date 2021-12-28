@@ -12,11 +12,7 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-
-
-//add
 router.post('/', async (req, res, next) => {
-  //console.log(res.body)
   try {
     await db.postQuestion(req.body)
     res.sendStatus(201)
@@ -25,4 +21,46 @@ router.post('/', async (req, res, next) => {
   }
 })
 
+router.post('/:id/answers', async (req, res, next) => {
+  try {
+    await db.postAnswer(req.body, req.params.id)
+    res.sendStatus(201)
+  } catch(err) {
+    console.log(err)
+  }
+})
+
+router.put('/:id/questions/helpful', async (req, res, next) => {
+  try {
+    await db.updateQuestionsHelpful(req.params.id)
+    res.sendStatus(204)
+  } catch(err) {
+    console.log(err)
+  }
+})
+
+router.put('/:id/answers/helpful', async (req, res, next) => {
+  try {
+    await db.updateAnswersHelpful(req.params.id)
+    res.sendStatus(204)
+  } catch(err) {
+    console.log(err)
+  }
+})
+
+
+router.put('/:id/answers/report', async (req, res, next) => {
+  try {
+    await db.updateReport(req.params.id)
+    res.sendStatus(204)
+  } catch(err) {
+    console.log(err)
+  }
+})
+
 module.exports = router;
+
+
+
+
+

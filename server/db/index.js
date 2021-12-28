@@ -1,6 +1,5 @@
 const mysql = require('mysql');
 const mysqlConfig = require('./config.js');
-
 const pool = mysql.createPool({
   connectionLimit: 10,
   password: 'password',
@@ -9,9 +8,7 @@ const pool = mysql.createPool({
   host: '127.0.0.1', //use localhost on M1 imac or omit
   port: '3306'
 });
-
 const days_a_week_db = {};
-
 days_a_week_db.getData = (id) => {
   return new Promise((resolve, reject) => {
     pool.query(
@@ -28,9 +25,9 @@ days_a_week_db.getData = (id) => {
       q.id, JSON_OBJECT(
         'id', 0,
         'body', 'no answer yet',
-        'date', 0,
+        'date', '',
         'answerer_name', '',
-        'helpfulness', 0,
+        'helpfulness', '',
         'photos', JSON_ARRAY (
           "[]"
         )
@@ -38,20 +35,7 @@ days_a_week_db.getData = (id) => {
     )
   ) results
   FROM questions q
-  LEFT JOIN (SELECT
-  aw.id as a_id,
-  aw.question_id as question_id,
-  aw.body as answer_body,
-  FROM_UNIXTIME(aw.date_written/1000) as date_time,
-  aw.answerer_name,
-  aw.answerer_email,
-  aw.reported,
-  aw.helpful,
-  CASE WHEN ap.url IS NULL THEN '"no pic"' ELSE ap.url END as url
-  FROM answers aw
-  LEFT JOIN answers_photo ap
-  ON aw.id = ap.answer_id
-  ) AS a
+  LEFT JOIN answers a
   ON q.id = a.question_id
   WHERE product_id = ?
   AND a.question_id IS NULL
@@ -113,7 +97,6 @@ days_a_week_db.getData = (id) => {
   })
 }
 
-
 days_a_week_db.postQuestion = (res) => {
   return new Promise((resolve, reject) => {
     pool.query(`
@@ -125,22 +108,70 @@ days_a_week_db.postQuestion = (res) => {
         return reject(err);
       } else {
         console.log(`question for ${res.product_id} inserted into database`)
+        //res.redirect(/)???
         return resolve(results);
       }
     })
   })
 }
 
-days_a_week_db.update = () => {
-  return new Promise((resolve, reject) => {
-
+days_a_week_db.postAnswer = (res, id) => {
+  let sql1 = `INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email) VALUES (?, ?, ?, ?, ?)`
+  let sql2 =
+  `INSERT INTO answers_photo (answer_id, url) VALUES ((SELECT MAX(id) FROM answers), "no idea")`
+  let insert1 = [id, res.body, 0, res.name, res.email]
+  let insert2 = [res.photos || ""]
+  Promise.all([
+    pool.query(sql1, insert1),
+    pool.query(sql2, insert2)
+  ]).then(function([sql1results, sql2results]) {
+    console.log('success two inserts')
+  }).catch((err) => {
+    console.log(err)
   })
 }
 
 
+days_a_week_db.updateQuestionsHelpful = (id) => {
+  console.log(id)
+  return new Promise((resolve, reject) => {
+    pool.query(`
+      UPDATE questions q SET q.helpful = q.helpful + 1 WHERE id = ?
+    `, [id], (err, results) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log('helpful updated')
+      }
+    })
+  })
+}
 
+days_a_week_db.updateAnswersHelpful = (id) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`
+      UPDATE answers a SET a.helpful = a.helpful + 1 WHERE id = ?
+    `, [id], (err, results) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log('answers - helpful updated')
+      }
+    })
+  })
+}
 
-
-
+days_a_week_db.updateReport = (res, id) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`
+      UPDATE answers a SET a.reported = 1 WHERE id = ?
+    `, [id], (err, results) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log('answer reported')
+      }
+    })
+  })
+}
 module.exports = days_a_week_db;
-
