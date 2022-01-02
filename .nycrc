@@ -1,0 +1,9 @@
+{
+  "all": true,
+  "include": [
+    "test/*",
+    "server/routes/*"
+  ],
+  "all": true,
+  "exclude": []
+}

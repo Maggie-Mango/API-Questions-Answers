@@ -2,6 +2,7 @@ const express = require('express');
 const db =  require('../db');
 const router = express.Router();
 
+
 router.get('/:id', async (req, res, next) => {
   try {
     let results = await db.getData(req.params.id);
@@ -12,7 +13,7 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/questions', async (req, res, next) => {
   try {
     await db.postQuestion(req.body)
     res.sendStatus(201)
