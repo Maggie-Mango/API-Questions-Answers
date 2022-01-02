@@ -9,6 +9,7 @@ const pool = mysql.createPool({
   port: '3306'
 });
 const days_a_week_db = {};
+
 days_a_week_db.getData = (id) => {
   return new Promise((resolve, reject) => {
     pool.query(
@@ -22,14 +23,14 @@ days_a_week_db.getData = (id) => {
     'question_helpfulness', q.helpful,
     'reported', CASE WHEN q.reported = 0 THEN 'False' ELSE 'True' END,
     'answers', JSON_OBJECT (
-      q.id, JSON_OBJECT (
+      0, JSON_OBJECT (
         'id', 0,
         'body', '"no answer yet"',
         'date', '',
         'answerer_name', '"n/a"',
         'helpfulness', '',
         'photos', JSON_ARRAY (
-          '""'
+          '"null"'
         )
       )
     )
@@ -71,7 +72,7 @@ days_a_week_db.getData = (id) => {
     aw.answerer_email,
     aw.reported,
     aw.helpful,
-    CASE WHEN ap.url IS NULL THEN '""' ELSE ap.url END as url
+    CASE WHEN ap.url IS NULL THEN '"null"' ELSE ap.url END as url
     FROM answers aw
     LEFT JOIN answers_photo ap
     ON aw.id = ap.answer_id
@@ -90,6 +91,11 @@ days_a_week_db.getData = (id) => {
     }
     for (let i in results) {
       let data = JSON.parse(results[i]['results'])
+
+      if (data['answers'][0]) {
+        data['answers'] = []
+      }
+
       mySqlData["results"].push(data)
     }
       return resolve(mySqlData);
@@ -116,11 +122,15 @@ days_a_week_db.postQuestion = (res) => {
 }
 
 days_a_week_db.postAnswer = (res, id) => {
+  if (res.photos.length === 0) {
+    res.photos = 'null'
+  }
+  let date = new Date()
   let sql1 = `INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email) VALUES (?, ?, ?, ?, ?)`
   let sql2 =
-  `INSERT INTO answers_photo (answer_id, url) VALUES ((SELECT MAX(id) FROM answers), "no idea")`
-  let insert1 = [id, JSON.stringify(res.body), 0, JSON.stringify(res.name), res.email]
-  let insert2 = [res.photos || ""]
+  `INSERT INTO answers_photo (answer_id, url) VALUES ((SELECT MAX(id) FROM answers), ?)`
+  let insert1 = [id, JSON.stringify(res.body), date.getTime(), JSON.stringify(res.name), res.email]
+  let insert2 = [JSON.stringify(res.photos)]
   Promise.all([
     pool.query(sql1, insert1),
     pool.query(sql2, insert2)

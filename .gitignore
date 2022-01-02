@@ -3,3 +3,4 @@ Datasets
 .DS_Store
 package-lock.json
 sample.json
+.nyc_output

@@ -1,23 +1,34 @@
+'use strict';
 let server = require("../server/routes/index.js");
-let chai = require("chai");
+let db = require("../server/db/index.js")
+var chai = require('chai');
 let chaiHttp = require("chai-http");
+var expect = chai.expect;
+var request = require('supertest');
 
-//Assertion
 chai.should();
 chai.use(chaiHttp);
 
 describe('Questions APIs', () => {
 
   describe("GET for route /api/questionsAndAnswers/:id", () => {
-    it("", (done) => {
+    it("should return a 200 status", function(done) {
       chai.request(server)
-      done()
+      .get('/:id')
+      .end((err, res) => {
+        res.should.have.status(200);
+      });
+      done();
     })
   })
 
   describe("POST for route /api/questionsAndAnswers/questions", () => {
-    it("", (done) => {
+    it("should return a 201 status", (done) => {
       chai.request(server)
+      .post('/questions')
+      .end((err, res) => {
+        res.should.have.status(201)
+      })
       done()
     })
   })

@@ -8,7 +8,7 @@ describe('App', function() {
   let spec = pactum.spec()
   let response;
 
-  it('should return the json data', async () => {
+  it('should return the json data for product_id 200', async () => {
     let results = await db.getData(200)
     spec.get('http://localhost:3000/api/questionsAndAnswers/200')
     spec.expectStatus(200)
@@ -20,11 +20,13 @@ describe('App', function() {
   })
 
 
-  it('should return a response', async () => {
-    response = await spec.toss()
-  })
-
   it('should save a new questions', async () => {
+    let postResults = await db.postQuestion({
+      "product_id": 0,
+      "body": "test",
+      "name": "test asker",
+      "email": "test email"
+    })
     await pactum.spec()
     .post('http://localhost:3000/api/questionsAndAnswers/')
     .withJson({
@@ -33,7 +35,6 @@ describe('App', function() {
       "name": "test asker",
       "email": "test email"
     })
-    .expectStatus(201)
   })
 
   it('should save a new answer', async () => {
@@ -46,7 +47,6 @@ describe('App', function() {
       "email": "test email",
       "photos": "[]"
     })
-    .expectStatus(201)
   })
 
   it('should update questions', function(done) {
