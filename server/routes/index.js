@@ -1,17 +1,65 @@
 const express = require('express');
 const db =  require('../db');
 const router = express.Router();
+const Redis = require("ioredis");
+const redis = new Redis();
+
+/*
+//const redisClient = redis.createClient(redisUrl);
+//redisClient.connect()
+redisClient.on('connect',() => {
+  console.log(`Connected to Redis on port ${REDIS_PORT}.`)
+});
+
+redisClient.set = util.promisify(redisClient.set)
+*/
+
+checkCache = (req, res, next) => {
+  const { id } = req.params;
+  redis.get(id, (err, data) => {
+      if (err) {
+          console.log(err);
+          res.status(500).send(err);
+      }
+      //if no match found
+      if (data !== null) {
+          res.send(data);
+      }
+      else {
+          //proceed to next middleware function
+          next();
+      }
+  });
+};
 
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', checkCache, async (req, res, next) => {
+
   try {
-    let results = await db.getData(req.params.id);
-    res.json(results)
+    const id = req.params.id;
+    const response = await db.getData(id);
+    const data = response
+    redis.setex(id, 3600, JSON.stringify(data))
+    res.json(response)
   } catch(err) {
     console.log(err)
     res.sendStatus(500);
+  } finally {
+
   }
+
 });
+
+
+router.get('/:productId/:id/answers', async (req, res, next) => {
+  console.log(req.params)
+  try {
+    let results = await db.getData(req.params.productId);
+    res.json(results)
+  } catch(err) {
+    console.log(err)
+  }
+})
 
 router.post('/questions', async (req, res, next) => {
   try {

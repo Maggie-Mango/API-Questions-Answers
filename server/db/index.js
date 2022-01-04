@@ -38,7 +38,7 @@ days_a_week_db.getData = (id) => {
     FROM questions q
     LEFT JOIN answers a
     ON q.id = a.question_id
-    WHERE product_id = ?
+    WHERE product_id = 1000011
     AND a.question_id IS NULL
     UNION ALL
     SELECT
@@ -78,7 +78,7 @@ days_a_week_db.getData = (id) => {
     ON aw.id = ap.answer_id
     ) AS a
     ON q.id = a.question_id
-    WHERE product_id = ?
+    WHERE product_id = 1000011
     AND a.question_id IS NOT NULL
     GROUP BY a.question_id
 `, [id, id], (err, results) => {
@@ -102,12 +102,52 @@ days_a_week_db.getData = (id) => {
     })
   })
 }
-
+/*
+days_a_week_db.getAnswer = (answerId) => {
+  console.log('in get place')
+  console.log(typeof answerId)
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `
+      SELECT
+      JSON_OBJECT(
+      'answers', JSON_OBJECTAGG(
+        a.id, JSON_OBJECT(
+          'id', a.id,
+          'body', a.body,
+          'date', a.date_written,
+          'answerer_name', a.answerer_name,
+          'helpfulness', a.helpful,
+          'photos', JSON_ARRAY(
+            ap.url
+          )
+        )
+      )
+      ) results
+      FROM answers a
+      LEFT JOIN answers_photo ap
+      ON a.id = ap.answer_id
+      WHERE a.id = ?
+      GROUP BY a.question_id;
+      `
+    , [answerId], (err, results) => {
+      if(err) {
+        console.log(err)
+        return reject(err)
+      }
+      console.log('also in here')
+      console.log(results)
+      return resolve(results)
+    })
+  })
+}
+*/
 days_a_week_db.postQuestion = (res) => {
   return new Promise((resolve, reject) => {
+    let date = new Date()
     pool.query(`
     INSERT INTO questions (product_id, body, date_written, asker_name, asker_email)
-    VALUES (?, ?, 000, ?, ?)
+    VALUES (?, ?, ${date.getTime()}, ?, ?)
     `, [res.product_id, JSON.stringify(res.body), JSON.stringify(res.name), res.email],  (err, results) => {
       if (err) {
         console.log('error posting question')
@@ -129,7 +169,7 @@ days_a_week_db.postAnswer = (res, id) => {
   let sql1 = `INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email) VALUES (?, ?, ?, ?, ?)`
   let sql2 =
   `INSERT INTO answers_photo (answer_id, url) VALUES ((SELECT MAX(id) FROM answers), ?)`
-  let insert1 = [id, JSON.stringify(res.body), date.getTime(), JSON.stringify(res.name), res.email]
+  let insert1 = [JSON.stringify(id), JSON.stringify(res.body), date.getTime(), JSON.stringify(res.name), JSON.stringify(res.email)]
   let insert2 = [JSON.stringify(res.photos)]
   Promise.all([
     pool.query(sql1, insert1),
@@ -143,7 +183,6 @@ days_a_week_db.postAnswer = (res, id) => {
 
 
 days_a_week_db.updateQuestionsHelpful = (id) => {
-  console.log(id)
   return new Promise((resolve, reject) => {
     pool.query(`
       UPDATE questions q SET q.helpful = q.helpful + 1 WHERE id = ?
