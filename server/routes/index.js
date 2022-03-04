@@ -4,16 +4,6 @@ const router = express.Router();
 const Redis = require("ioredis");
 const redis = new Redis();
 
-/*
-//const redisClient = redis.createClient(redisUrl);
-//redisClient.connect()
-redisClient.on('connect',() => {
-  console.log(`Connected to Redis on port ${REDIS_PORT}.`)
-});
-
-redisClient.set = util.promisify(redisClient.set)
-*/
-
 checkCache = (req, res, next) => {
   const { id } = req.params;
   redis.get(id, (err, data) => {
