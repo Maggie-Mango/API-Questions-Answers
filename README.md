@@ -13,11 +13,14 @@
 * NGINX Load Balancer
 
 
+
 ## Description
 
 I built the server and database for a single API service which supports an E-commerce application. This service utilizes the following scaling techniques in order to handle large quanties of data and traffic: **load balancing**, **caching**, **indexing**, **additional AWS EC2 Instances** and **clustering**. 
 
 Post-optimization, this service is able to handle **5,000 requests per second with a 30% error rate**
+
+This project was deployed on **3 AWS EC2 INSTANCES**
 
 
 ## Project Documentation
