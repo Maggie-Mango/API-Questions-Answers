@@ -24,7 +24,7 @@ This project was deployed on **3 AWS EC2 INSTANCES**
 
 
 ## Project Documentation
-The course of this project was documented thoroughly in my Notion journal.
+The course of this project was documented thoroughly in my [Notion journal]<https://aback-draw-7e0.notion.site/71ab63b02d6443f1b04ffd8b36203f84?v=1292a485a2de4973ad6e41b352df9883>.
 
 Screenshot demonstrating that the API can easily handle 1,000 reqs per second
 <img width="680" alt="Screen Shot 2022-03-04 at 3 03 34 PM" src="https://user-images.githubusercontent.com/13864148/156833627-a8000856-439d-48d7-a18a-bffedd3ab804.png">
