@@ -51,19 +51,19 @@ SELECT
   a.url as photos
 FROM questions q
 JOIN (SELECT
-          aw.id as a_id,
-          aw.question_id,
-          aw.body as answer_body,
-          FROM_UNIXTIME(aw.date_written/1000) as date_time,
-          aw.answerer_name,
-          aw.answerer_email,
-          aw.reported,
-          aw.helpful,
-          ap.id,
-          ap.url
-          FROM answers aw
-          JOIN answers_photo ap
-          ON aw.id = ap.answer_id) AS a
+      aw.id as a_id,
+      aw.question_id,
+      aw.body as answer_body,
+      FROM_UNIXTIME(aw.date_written/1000) as date_time,
+      aw.answerer_name,
+      aw.answerer_email,
+      aw.reported,
+      aw.helpful,
+      ap.id,
+      ap.url
+      FROM answers aw
+      JOIN answers_photo ap
+      ON aw.id = ap.answer_id) AS a
 ON q.id = a.id
 LIMIT 30;
 
